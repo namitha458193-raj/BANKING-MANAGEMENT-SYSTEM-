@@ -57,9 +57,18 @@ public class BankingManagement1{
             switch (choice) {
 
                 case 1:
+                    int f1=0;
                     System.out.print("Enter Account Number: ");
                     int accNo = sc.nextInt();
+                    for(BankAccount acc:accounts){
+                        if(acc.getAccountNumber()==accNo){
+                            System.out.print("Account Number is already here");
+                            f1=1;
+                            break;
+                        }
+                    }
                     sc.nextLine();
+                    if(f1==0){
 
                     System.out.print("Enter Account Holder Name: ");
                     String name = sc.nextLine();
@@ -69,9 +78,11 @@ public class BankingManagement1{
 
                     accounts.add(new BankAccount(accNo, name, balance));
                     System.out.println("Account Created Successfully.");
+                    }
                     break;
 
                 case 2:
+                    int f2=0;
                     System.out.print("Enter Account Number: ");
                     accNo = sc.nextInt();
 
@@ -82,12 +93,17 @@ public class BankingManagement1{
                             acc.setBalance(acc.getBalance() + amount);
                             System.out.println("Deposit Successful.");
                             System.out.println("Current Balance: " + acc.getBalance());
+                            f2=1
                             break;
                         }
+                    }
+                    if(f2==0){
+                        System.out.print("Account Number is Invalid");
                     }
                     break;
 
                 case 3:
+                    int f3=0;
                     System.out.print("Enter Account Number: ");
                     accNo = sc.nextInt();
 
@@ -103,12 +119,17 @@ public class BankingManagement1{
                             } else {
                                 System.out.println("Insufficient Balance.");
                             }
+                            f3=1;
                             break;
                         }
+                    }
+                    if(f3==0){
+                        System.out.print("Account Number is Invalid");
                     }
                     break;
 
                 case 4:
+                    int f4=0;
                     System.out.print("Enter Account Number: ");
                     accNo = sc.nextInt();
 
@@ -117,8 +138,12 @@ public class BankingManagement1{
                             System.out.println("Account Number : " + acc.getAccountNumber());
                             System.out.println("Account Holder : " + acc.getAccountHolderName());
                             System.out.println("Balance : " + acc.getBalance());
+                            f4=1;
                             break;
                         }
+                    }
+                    if(f4==0){
+                        System.out.print("Account Number is Invalid");
                     }
                     break;
 
