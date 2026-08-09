@@ -51,6 +51,7 @@ public class BankingManagement2 {
             System.out.println("3. Withdraw");
             System.out.println("4. Check Balance");
             System.out.println("5. Exit");
+            System.out.println("View All Details :");
             System.out.print("Enter your choice: ");
 
             int choice = sc.nextInt();
@@ -130,6 +131,19 @@ public class BankingManagement2 {
                     System.out.println("Thank You!");
                     sc.close();
                     System.exit(0);
+                case 6:
+                     System.out.println("\n===== All Account Details =====");
+
+                    if (accounts.isEmpty()) {
+                        System.out.println("No accounts available.");
+                    } else {
+                        for (BankAccount account : accounts.values()) {
+                            System.out.println("Account Number : " + account.getAccountNumber());
+                            System.out.println("Account Holder : " + account.getAccountHolderName());
+                            System.out.println("Balance : " + account.getBalance());
+                        }
+                    }
+                    break;
 
                 default:
                     System.out.println("Invalid Choice!");
