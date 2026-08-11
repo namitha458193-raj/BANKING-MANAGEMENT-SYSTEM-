@@ -61,6 +61,10 @@ public class BankingManagement2 {
                 case 1:
                     System.out.print("Enter Account Number: ");
                     int accNo = sc.nextInt();
+                    if(accounts.containsKey(accNo)){
+                        System.out.println("Account Number is already exit");
+                        break;
+                    }
                     sc.nextLine();
 
                     System.out.print("Enter Account Holder Name: ");
