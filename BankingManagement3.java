@@ -150,7 +150,7 @@ public class BankingManagement3 {
                             + account.getAccNo());
                     System.out.println("Name           : "
                             + account.getName());
-                    System.out.println("Balance        : ₹"
+                    System.out.println("Balance        : "
                             + account.getBalance());
                     break;
 
