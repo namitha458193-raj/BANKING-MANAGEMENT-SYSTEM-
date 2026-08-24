@@ -1,170 +1,264 @@
-import java.util.*;
-
-class BankAccount {
-    int accountNumber;
-    String name;
-    double balance;
-
-    BankAccount(int accountNumber, String name, double balance) {
-        this.accountNumber = accountNumber;
-        this.name = name;
-        this.balance = balance;
-    }
-
-    void display() {
-        System.out.println("Account Number : " + accountNumber);
-        System.out.println("Account Holder : " + name);
-        System.out.println("Balance        : ₹" + balance);
-    }
-}
+import java.util.Scanner;
+import java.util.TreeMap;
 
 public class BankingManagement4 {
+
+    // Transaction Class
+    static class Transaction {
+
+        String type;
+        double amount;
+        String description;
+
+        Transaction(String type, double amount, String description) {
+            this.type = type;
+            this.amount = amount;
+            this.description = description;
+        }
+    }
+
+    // Account Class
+    static class Account {
+
+        int id;
+        String name;
+        double balance;
+
+        TreeMap<Integer, Transaction> transactions;
+
+        Account(int id, String name, double balance) {
+            this.id = id;
+            this.name = name;
+            this.balance = balance;
+
+            transactions = new TreeMap<>();
+        }
+    }
+
+    // Bank Class
+    static class Bank {
+
+        TreeMap<Integer, Account> accounts;
+
+        Bank() {
+            accounts = new TreeMap<>();
+        }
+    }
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        // TreeMap stores account number in sorted order
-        TreeMap<Integer, BankAccount> accounts = new TreeMap<>();
+        Bank bank = new Bank();
 
         while (true) {
 
-            System.out.println("\n===== BANKING MANAGEMENT SYSTEM =====");
-            System.out.println("1. Create Account");
+            System.out.println("\n===== SECURE BANK =====");
+            System.out.println("1. Add Account");
             System.out.println("2. Deposit");
-            System.out.println("3.withdraw");
-            System.out.println("4. Display Account");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Display Statement");
             System.out.println("5. Exit");
 
-            System.out.print("Enter your choice: ");
-            int choice = sc.nextInt();
+            System.out.print("Enter choice: ");
+            int choice = Integer.parseInt(sc.nextLine());
 
             switch (choice) {
 
+                // ADD ACCOUNT
                 case 1:
-                    System.out.print("Enter Account Number: ");
-                    int accNo = sc.nextInt();
 
-                    if (accounts.containsKey(accNo)) {
-                        System.out.println("Account already exists!");
-                        break;
-                    }
+                    System.out.print("Enter Account ID: ");
+                    int id = Integer.parseInt(sc.nextLine());
+                    Account depositAccount =
+                            bank.accounts.get(id);
 
-                    sc.nextLine();
+                    if (depositAccount != null) {
 
-                    System.out.print("Enter Account Holder Name: ");
+                        System.out.println("Account is already exit");
+
+                    } else {
+
+                    System.out.print("Enter Name: ");
                     String name = sc.nextLine();
 
                     System.out.print("Enter Initial Balance: ");
-                    double balance = sc.nextDouble();
+                    double balance =
+                            Double.parseDouble(sc.nextLine());
 
-                    BankAccount account =
-                            new BankAccount(accNo, name, balance);
+                    Account account =
+                            new Account(id, name, balance);
 
-                    accounts.put(accNo, account);
+                    bank.accounts.put(id, account);
 
-                    System.out.println("Account created successfully!");
+                    System.out.println(
+                            "Account added successfully.");
+                    }
+
                     break;
 
+
+                // DEPOSIT
                 case 2:
-                    System.out.print("Enter Account Number: ");
-                    accNo = sc.nextInt();
 
-                    BankAccount acc = accounts.get(accNo);
+                    System.out.print("Enter Account ID: ");
+                    int depositId =
+                            Integer.parseInt(sc.nextLine());
 
-                    if (acc == null) {
-                        System.out.println("Account not found!");
-                        break;
-                    }
+                    Account depositAccount1 =
+                            bank.accounts.get(depositId);
 
-                    System.out.print("Enter Deposit Amount: ");
-                    double amount = sc.nextDouble();
-
-                    if (amount <= 0) {
-                        System.out.println("Invalid deposit amount!");
-                        break;
-                    }
-
-                    acc.balance = acc.balance + amount;
-
-                    System.out.println("Deposit successful!");
-                    System.out.println("Current Balance: "
-                            + acc.balance);
-                    break;
-                                case 3:
-
-                    System.out.print("Enter Account Number: ");
-                    accNo = sc.nextInt();
-
-                    acc = accounts.get(accNo);
-
-                    if (acc == null) {
+                    if (depositAccount1 == null) {
 
                         System.out.println(
-                                "Account not found!");
+                                "Account not found.");
 
-                        break;
-                    }
+                    } else {
 
-                    System.out.print("Enter Withdraw Amount: ");
-                    amount = sc.nextDouble();
+                        System.out.print("Enter Amount: ");
+                        double amount =
+                                Double.parseDouble(sc.nextLine());
 
-                    if (amount <= 0) {
+                        depositAccount1.balance += amount;
+
+                        Transaction t =
+                                new Transaction(
+                                        "CREDIT",
+                                        amount,
+                                        "Deposit");
+
+                        depositAccount1.transactions.put(
+                                depositAccount1.transactions.size() + 1,
+                                t);
 
                         System.out.println(
-                                "Invalid withdrawal amount!");
-
-                        break;
-                    }
-
-                    if (amount > acc.balance) {
+                                "Deposit successful.");
 
                         System.out.println(
-                                "Insufficient balance!");
-
-                        break;
+                                "Balance: "
+                                + depositAccount1.balance);
                     }
-
-                    acc.balance = acc.balance - amount;
-
-                    System.out.println(
-                            "Withdrawal successful!");
-
-                    System.out.println(
-                            "Current Balance: "
-                            + acc.balance);
 
                     break;
 
+
+                // WITHDRAW
+                case 3:
+
+                    System.out.print("Enter Account ID: ");
+                    int withdrawId =
+                            Integer.parseInt(sc.nextLine());
+
+                    Account withdrawAccount =
+                            bank.accounts.get(withdrawId);
+
+                    if (withdrawAccount == null) {
+
+                        System.out.println(
+                                "Account not found.");
+
+                    } else {
+
+                        System.out.print("Enter Amount: ");
+                        double amount =
+                                Double.parseDouble(sc.nextLine());
+
+                        if (withdrawAccount.balance >= amount) {
+
+                            withdrawAccount.balance -= amount;
+
+                            Transaction t =
+                                    new Transaction(
+                                            "DEBIT",
+                                            amount,
+                                            "Withdrawal");
+
+                            withdrawAccount.transactions.put(
+                                    withdrawAccount.transactions.size() + 1,
+                                    t);
+
+                            System.out.println(
+                                    "Withdrawal successful.");
+
+                            System.out.println(
+                                    "Balance: "
+                                    + withdrawAccount.balance);
+
+                        } else {
+
+                            System.out.println(
+                                    "Insufficient balance.");
+                        }
+                    }
+
+                    break;
+
+
+                // DISPLAY STATEMENT
                 case 4:
 
-                    System.out.print("Enter Account Number: ");
-                    accNo = sc.nextInt();
+                    System.out.print("Enter Account ID: ");
+                    int statementId =
+                            Integer.parseInt(sc.nextLine());
 
-                    acc = accounts.get(accNo);
+                    Account statementAccount =
+                            bank.accounts.get(statementId);
 
-                    if (acc == null) {
+                    if (statementAccount == null) {
 
                         System.out.println(
-                                "Account not found!");
+                                "Account not found.");
 
                     } else {
 
                         System.out.println(
-                                "\n----- ACCOUNT DETAILS -----");
+                                "\n===== ACCOUNT STATEMENT =====");
 
-                        acc.display();
+                        System.out.println(
+                                "Account ID: "
+                                + statementAccount.id);
+
+                        System.out.println(
+                                "Name: "
+                                + statementAccount.name);
+
+                        System.out.println(
+                                "-----------------------------");
+
+                        for (Transaction t :
+                                statementAccount.transactions.values()) {
+
+                            System.out.println(
+                                    t.type + " | "
+                                    + t.amount + " | "
+                                    + t.description);
+                        }
+
+                        System.out.println(
+                                "-----------------------------");
+
+                        System.out.println(
+                                "Balance: "
+                                + statementAccount.balance);
                     }
 
                     break;
 
+
+                // EXIT
                 case 5:
-                    System.out.println("Thank you for using the Banking System!");
+
+                    System.out.println(
+                            "Exiting SecureBank...");
+
                     sc.close();
                     return;
 
+
                 default:
-                    System.out.println("Invalid choice!");
+
+                    System.out.println(
+                            "Invalid choice.");
             }
         }
     }
