@@ -1,381 +1,258 @@
 import java.io.*;
 import java.util.*;
 
-class Account {
-
-    int accountNumber;
-    String name;
-    double balance;
-
-    Account(int accountNumber, String name, double balance) {
-        this.accountNumber = accountNumber;
-        this.name = name;
-        this.balance = balance;
-    }
-    String toCSV() {
-        return accountNumber + "," + name + "," + balance;
-    }
-}
-
 public class BankingManagement5 {
 
-    static final String FILE_NAME = "accounts.csv";
-
+    static String fileName = "accounts.txt";
     static Scanner sc = new Scanner(System.in);
+    static void createAccount() throws IOException {
 
-    static void createAccount() {
+        System.out.print("Enter Account Number: ");
+        int accNo = Integer.parseInt(sc.nextLine());
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        String line;
 
-        try {
+        while ((line = br.readLine()) != null) {
+            String[] data = line.split("\\|");
 
-            System.out.print("Enter Account Number: ");
-            int accountNumber = Integer.parseInt(sc.nextLine());
-
-            List<Account> accounts = readAccounts();
-
-            for (Account account : accounts) {
-
-                if (account.accountNumber == accountNumber) {
-
-                    System.out.println("Account already exists.");
-
-                    return;
-                }
-            }
-
-            System.out.print("Enter Name: ");
-            String name = sc.nextLine();
-
-            System.out.print("Enter Initial Deposit: ");
-            double balance = Double.parseDouble(sc.nextLine());
-
-            if (balance < 0) {
-
-                System.out.println(
-                        "Initial deposit cannot be negative.");
-
+            if (Integer.parseInt(data[0]) == accNo) {
+                System.out.println("Account already exists.");
+                br.close();
                 return;
             }
-            BufferedWriter writer =
-                    new BufferedWriter(
-                            new FileWriter(FILE_NAME, true));
-
-            File file = new File(FILE_NAME);
-
-            if (file.length() == 0) {
-
-                writer.write("AccountNumber,Name,Balance");
-                writer.newLine();
-            }
-
-            Account account =
-                    new Account(accountNumber, name, balance);
-
-            writer.write(account.toCSV());
-            writer.newLine();
-
-            writer.close();
-
-            System.out.println(
-                    "Account created successfully.");
-
-        } catch (NumberFormatException e) {
-
-            System.out.println(
-                    "Please enter a valid number.");
-
-        } catch (IOException e) {
-
-            System.out.println(
-                    "File error: " + e.getMessage());
         }
+
+        br.close();
+
+        System.out.print("Enter Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Initial Deposit: ");
+        double balance = Double.parseDouble(sc.nextLine());
+
+        if (balance < 0) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        BufferedWriter bw =
+                new BufferedWriter(new FileWriter(fileName, true));
+
+        bw.write(accNo + "|" + name + "|" + balance);
+        bw.newLine();
+
+        bw.close();
+
+        System.out.println("Account created successfully.");
     }
-    static void deposit() {
+    static void deposit() throws IOException {
 
-        try {
+    System.out.print("Enter Account Number: ");
+    int accNo = Integer.parseInt(sc.nextLine());
+    BufferedReader br =
+            new BufferedReader(new FileReader(fileName));
 
-            System.out.print("Enter Account Number: ");
-            int accountNumber =
-                    Integer.parseInt(sc.nextLine());
+    String line;
+    boolean found = false;
 
-            List<Account> accounts = readAccounts();
+    ArrayList<String> accounts = new ArrayList<>();
 
-            Account foundAccount = null;
-            for (Account account : accounts) {
+    while ((line = br.readLine()) != null) {
 
-                if (account.accountNumber == accountNumber) {
+        String[] data = line.split("\\|");
 
-                    foundAccount = account;
+        int number = Integer.parseInt(data[0]);
 
-                    break;
-                }
-            }
-
-            if (foundAccount == null) {
-
-                System.out.println(
-                        "Account does not exist.");
-
-                return;
-            }
+        if (number == accNo) {
+            found = true;
 
             System.out.print("Enter Deposit Amount: ");
-            double amount =
-                    Double.parseDouble(sc.nextLine());
-
+            double amount = Double.parseDouble(sc.nextLine());
             if (amount <= 0) {
-
-                System.out.println(
-                        "Deposit amount must be greater than zero.");
-
+                System.out.println("Deposit amount must be greater than 0.");
+                br.close();
                 return;
             }
-            foundAccount.balance =
-                    foundAccount.balance + amount;
 
-            writeAccounts(accounts);
+            double balance = Double.parseDouble(data[2]);
 
-            System.out.println(
-                    "Deposit successful.");
+            balance = balance + amount;
 
-            System.out.println(
-                    "New Balance: ₹" + foundAccount.balance);
-
-        } catch (NumberFormatException e) {
-
-            System.out.println(
-                    "Please enter a valid number.");
-
+            line = data[0] + "|" + data[1] + "|" + balance;
         }
+
+        accounts.add(line);
     }
-    static void withdraw() {
 
-        try {
+    br.close();
 
-            System.out.print("Enter Account Number: ");
-            int accountNumber =
-                    Integer.parseInt(sc.nextLine());
+    if (!found) {
+        System.out.println("Account does not exist.");
+        return;
+    }
+    BufferedWriter bw =
+            new BufferedWriter(new FileWriter(fileName));
 
-            List<Account> accounts = readAccounts();
+    for (String account : accounts) {
+        bw.write(account);
+        bw.newLine();
+    }
 
-            Account foundAccount = null;
+    bw.close();
 
-            for (Account account : accounts) {
+    System.out.println("Deposit successful.");
+}
 
-                if (account.accountNumber == accountNumber) {
+    static void withdraw() throws IOException {
 
-                    foundAccount = account;
+    System.out.print("Enter Account Number: ");
+    int accNo = Integer.parseInt(sc.nextLine());
+    BufferedReader br =
+            new BufferedReader(new FileReader(fileName));
 
-                    break;
-                }
-            }
+    String line;
+    boolean found = false;
 
-            if (foundAccount == null) {
+    ArrayList<String> accounts = new ArrayList<>();
 
-                System.out.println(
-                        "Account does not exist.");
+    while ((line = br.readLine()) != null) {
 
-                return;
-            }
+        String[] data = line.split("\\|");
+
+        int number = Integer.parseInt(data[0]);
+
+        if (number == accNo) {
+            found = true;
+
             System.out.print("Enter Withdrawal Amount: ");
-            double amount =
-                    Double.parseDouble(sc.nextLine());
+            double amount = Double.parseDouble(sc.nextLine());
             if (amount <= 0) {
-
                 System.out.println(
-                        "Withdrawal amount must be greater than zero.");
-
+                        "Withdrawal amount must be greater than 0.");
+                br.close();
                 return;
             }
-            if (amount > foundAccount.balance) {
 
-                System.out.println(
-                        "Insufficient balance.");
-
-                System.out.println(
-                        "Available Balance: ₹"
-                                + foundAccount.balance);
-
+            double balance = Double.parseDouble(data[2]);
+            if (amount > balance) {
+                System.out.println("Insufficient balance.");
+                br.close();
                 return;
             }
-            foundAccount.balance =
-                    foundAccount.balance - amount;
 
-            writeAccounts(accounts);
+            balance = balance - amount;
 
-            System.out.println(
-                    "Withdrawal successful.");
+            line = data[0] + "|" + data[1] + "|" + balance;
+        }
 
-            System.out.println(
-                    "New Balance: ₹" + foundAccount.balance);
+        accounts.add(line);
+    }
 
-        } catch (NumberFormatException e) {
+    br.close();
+    if (!found) {
+        System.out.println("Account does not exist.");
+        return;
+    }
+    BufferedWriter bw =
+            new BufferedWriter(new FileWriter(fileName));
 
-            System.out.println(
-                    "Please enter a valid number.");
+    for (String account : accounts) {
+        bw.write(account);
+        bw.newLine();
+    }
+
+    bw.close();
+
+    System.out.println("Withdrawal successful.");
+}
+    static void displayAccount() throws IOException {
+
+        System.out.print("Enter Account Number: ");
+        int accNo = Integer.parseInt(sc.nextLine());
+
+        BufferedReader br =
+                new BufferedReader(new FileReader(fileName));
+
+        String line;
+        boolean found = false;
+
+        while ((line = br.readLine()) != null) {
+
+            String[] data = line.split("\\|");
+
+            if (Integer.parseInt(data[0]) == accNo) {
+
+                System.out.println("\n--- Account Details ---");
+                System.out.println("Account Number: " + data[0]);
+                System.out.println("Name: " + data[1]);
+                System.out.println("Balance: " + data[2]);
+
+                found = true;
+                break;
+            }
+        }
+
+        br.close();
+
+        if (!found) {
+            System.out.println("Account does not exist.");
         }
     }
 
-    static List<Account> readAccounts() {
-
-        List<Account> accounts =
-                new ArrayList<>();
-
-        try {
-
-            File file = new File(FILE_NAME);
-
-            if (!file.exists()) {
-
-                return accounts;
-            }
-
-            BufferedReader reader =
-                    new BufferedReader(
-                            new FileReader(FILE_NAME));
-
-            reader.readLine();
-
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-
-                if (line.trim().isEmpty()) {
-
-                    continue;
-                }
-                String[] data = line.split(",");
-
-                int accountNumber =
-                        Integer.parseInt(data[0]);
-
-                String name = data[1];
-
-                double balance =
-                        Double.parseDouble(data[2]);
-
-                Account account =
-                        new Account(
-                                accountNumber,
-                                name,
-                                balance);
-
-                accounts.add(account);
-            }
-
-            reader.close();
-
-        } catch (IOException e) {
-
-            System.out.println(
-                    "Error reading file: "
-                            + e.getMessage());
-
-        } catch (NumberFormatException e) {
-
-            System.out.println(
-                    "Invalid data in CSV file.");
-        }
-
-        return accounts;
-    }
-
-    static void writeAccounts(List<Account> accounts) {
-
-        try {
-
-            BufferedWriter writer =
-                    new BufferedWriter(
-                            new FileWriter(FILE_NAME));
-
-            writer.write(
-                    "AccountNumber,Name,Balance");
-
-            writer.newLine();
-
-            for (Account account : accounts) {
-
-                writer.write(account.toCSV());
-
-                writer.newLine();
-            }
-
-            writer.close();
-
-        } catch (IOException e) {
-
-            System.out.println(
-                    "Error writing file: "
-                            + e.getMessage());
-        }
-    }
+    // Main Method
     public static void main(String[] args) {
 
-        while (true) {
+        // Create file if it doesn't exist
+        try {
+            File file = new File(fileName);
 
-            System.out.println();
-            System.out.println(
-                    "===== BANKING SYSTEM =====");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
-            System.out.println(
-                    "1. Create Account");
+            while (true) {
 
-            System.out.println(
-                    "2. Deposit");
+                System.out.println("\n===== BANKING MANAGEMENT SYSTEM =====");
+                System.out.println("1. Create Account");
+                System.out.println("2. Deposit");
+                System.out.println("3. Withdraw");
+                System.out.println("4. Display Account");
+                System.out.println("5. Exit");
 
-            System.out.println(
-                    "3. Withdraw");
+                System.out.print("Enter your choice: ");
 
-            System.out.println(
-                    "4. Exit");
-
-            System.out.print(
-                    "Enter your choice: ");
-
-            try {
-
-                int choice =
-                        Integer.parseInt(sc.nextLine());
+                int choice = Integer.parseInt(sc.nextLine());
 
                 switch (choice) {
 
                     case 1:
-
                         createAccount();
-
                         break;
 
                     case 2:
-
                         deposit();
-
                         break;
 
                     case 3:
-
                         withdraw();
-
                         break;
 
                     case 4:
+                        displayAccount();
+                        break;
 
-                        System.out.println(
-                                "Thank you for using Banking System.");
-
+                    case 5:
+                        System.out.println("Thank you!");
                         sc.close();
-
                         return;
 
                     default:
-
-                        System.out.println(
-                                "Invalid choice.");
+                        System.out.println("Invalid choice.");
                 }
-
-            } catch (NumberFormatException e) {
-
-                System.out.println(
-                        "Please enter a valid choice.");
             }
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
         }
     }
 }
